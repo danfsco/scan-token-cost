@@ -1,0 +1,4 @@
+"Deployment","Model","InputPerMillion","OutputPerMillion","Currency"
+"gpt-5.3-codex","gpt-5.3-codex","1.75","14","USD"
+"gpt-5.4","gpt-5.4","2.5","15","USD"
+"gpt-5.4-mini","gpt-5.4-mini","0.75","4.5","USD"
