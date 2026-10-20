@@ -26,7 +26,14 @@ See [`examples/foundry-usage.csv`](examples/foundry-usage.csv) for a real, anony
 
 ## 2. Estimate cost per scan
 
-Create `scans.csv` with the actual scan execution times (UTC):
+Get each scan's job and timing from Defender:
+
+```powershell
+.\defender status              # list tracked scan jobs
+.\defender status <JOB_ID>     # details for one job
+```
+
+Create `scans.csv` with each repo's actual scan start and end times (UTC). Use the job details above; if your CLI version doesn't show times, use the Scans tab in the Defender portal or note them when you run the scan.
 
 ```csv
 Repo,StartTime,EndTime
@@ -45,6 +52,8 @@ Then get current public prices and join:
 
 The output, `repo-model-cost.csv`, has tokens and estimated cost per repo and model. Usage outside the scan windows is reported as `(unattributed)`.
 
+**Cross-check:** the Defender portal (Exposure management > Initiatives > Codename MDASH > Manage scans) shows **tokens consumed in the last scan** per repo. Record it after each scan and compare it with the report's token total. Only the latest scan per repo is shown, so capture it before rescanning.
+
 **Use only for scans run one at a time**, with no other traffic on the deployments. Foundry metrics do not identify repos, so cost is a time-window estimate. Overlapping scan windows are rejected.
 
 ## 3. Collect data for a PTU estimate
@@ -52,7 +61,8 @@ The output, `repo-model-cost.csv`, has tokens and estimated cost per repo and mo
 Run representative scans at the **expected concurrency**, export usage as in step 1, and send us:
 
 - `foundry-usage.csv` (skip the cost join, so concurrent scans are fine)
-- Scan start/end times and the concurrency used
+- Scan start/end times (from `defender status`), the scan configuration (`standard` or `mai-cyber`), and the concurrency used
+- The portal's "tokens consumed in the last scan" for each repo, if available
 - For each deployment: model and version, deployment type, region, and TPM quota
 - Expected scans per hour and target scan duration
 - Any 429s, timeouts, or queueing during the test
@@ -64,3 +74,4 @@ Minute totals give average and peak load per model, a starting point for PTU siz
 - Estimates use public token prices: no cached-input discounts, negotiated rates, or PTU billing, and not an invoice.
 - Input tokens include cached tokens; output tokens already include reasoning.
 - If a deployment's model or price changes during the period, run separate reports.
+- The `mai-cyber` scan configuration adds a fourth model (MAI-Cyber-1-Flash). Add its deployment to the export and its rates to `prices.csv` (`Get-FoundryPrices.ps1` only covers the three standard models).
